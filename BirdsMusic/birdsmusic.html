@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Birds Music</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      background-color: #fff;
+      color: #444;
+      font-family: Monospace;
+      font-size: 13px;
+      line-height: 24px;
+      overscroll-behavior: none;
+    }
+
+    a {
+      color: #08f;
+    }
+
+    #info {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      z-index: 100;
+      display: block;
+    }
+
+    #error {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1em;
+      background-color: #f2dede;
+      color: #a94442;
+      text-align: center;
+      z-index: 200;
+      display: none;
+    }
+
+    #audio-panel {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      z-index: 100;
+    }
+
+    #audio-controls {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      width: 220px;
+      max-height: 500px;
+      /* Adjust as needed */
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+    }
+
+    #audio-controls.collapsed {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border: none;
+    }
+
+    #toggle-panel {
+      width: 100%;
+      padding: 5px;
+      background-color: #08f;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    #audio-controls h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    #audio-controls button {
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      border: none;
+      background-color: #08f;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #audio-controls button:hover {
+      background-color: #0077e6;
+    }
+
+    #volume-control,
+    #melody-volume-control,
+    #synth-volume-control,
+    #pad-volume-control,
+    #reverb-control,
+    #wind-volume-control,
+    #whoosh-volume-control {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    #wind-volume-slider,
+    #volume-slider,
+    #melody-volume-slider,
+    #synth-volume-slider,
+    #pad-volume-slider,
+    #reverb-slider,
+    #wind-volume-slider,
+    #whoosh-volume-slider {
+      width: 100%;
+      margin-left: 10px;
+    }
+
+    #audio-controls select {
+      width: 100%;
+      padding: 5px;
+      margin-top: 5px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+
+    .control-label {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    /* Stats panel styling */
+    .stats-gl-container {
+      position: absolute !important;
+      top: 30px !important;
+      /* Moved down to avoid button overlap */
+      left: 10px !important;
+      z-index: 100 !important;
+      opacity: 0.8 !important;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
+    }
+
+    .stats-gl-container.collapsed {
+      transform: translateY(-200%) !important;
+      /* Completely hide it off-screen */
+      opacity: 0 !important;
+      /* Make fully transparent when collapsed */
+    }
+
+    .stats-toggle-btn {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background-color: #08f;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 3px 8px;
+      font-size: 11px;
+      z-index: 101;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="info">
+    Birds Music - Procedural Audio Visual Relaxation Toy - © © <a href="https://sonicviz.com/us" target="_blank" rel="noopener">sonicviz.com</a> 2025<br />
+    Move mouse to disturb birds and create bird music. 
+  </div>
+  <div id="error"></div>
+  <div id="audio-panel">
+    <div id="audio-controls" class="collapsed">
+      <h3>Audio Controls</h3>
+      <button id="toggle-audio">Play Music</button>
+      <div class="control-label">Main Volume:</div>
+      <div id="volume-control">
+        <input type="range" id="volume-slider" min="0" max="100" value="70" title="Adjust volume" />
+      </div>
+
+      <div class="control-label">Melody Volume:</div>
+      <div id="melody-volume-control">
+        <input type="range" id="melody-volume-slider" min="0" max="100" value="70" title="Adjust melody volume" />
+      </div>
+
+      <div class="control-label">Synth Layer Volume:</div>
+      <div id="synth-volume-control">
+        <input type="range" id="synth-volume-slider" min="0" max="100" value="70" title="Adjust synth layer volume" />
+      </div>
+
+      <div class="control-label">Pad Volume:</div>
+      <div id="pad-volume-control">
+        <input type="range" id="pad-volume-slider" min="0" max="100" value="70" title="Adjust pad volume" />
+      </div>
+
+      <div class="control-label">Reverb Amount:</div>
+      <div id="reverb-control">
+        <input type="range" id="reverb-slider" min="0" max="100" value="100" title="Adjust reverb amount" />
+      </div>
+
+      <div class="control-label">Wind/Pointer Volume:</div>
+      <div id="wind-volume-control">
+        <input type="range" id="wind-volume-slider" min="0" max="100" value="50" title="Adjust wind volume" />
+      </div>
+      <div class="control-label">Flock Whoosh Volume:</div>
+      <div id="whoosh-volume-control">
+          <input type="range" id="whoosh-volume-slider" min="0" max="100" value="50" title="Adjust flock whoosh volume" />
+      </div>
+      <div class="control-label">Soundscape:</div>
+      <select id="soundscape-select" title="Select soundscape">
+        <option value="ambient">Ambient Dreamscape</option>
+        <option value="forest">Forest Ambience</option>
+        <option value="ocean">Ocean Waves</option>
+        <option value="night">Night Meditation</option>
+        <option value="meditation">Deep Meditation</option>
+      </select>
+    </div>
+    <button id="toggle-panel">Audio Controls</button>
+  </div>
+  <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.179.1/three.webgpu.min.js",
+          "three/webgpu": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.179.1/three.webgpu.min.js",
+          "three/tsl": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.179.1/three.tsl.min.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/",
+          "stats-gl": "https://unpkg.com/stats-gl@3.6.0/dist/main.js"
+        }
+      }
+    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.2.7/Tone.js"></script>
+  <script type="module" src="birdsmusic.js"></script>
+</body>
+
+</html>
