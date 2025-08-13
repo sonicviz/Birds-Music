@@ -75,3 +75,6 @@ This application is designed for exploration and relaxation. Here are some ways 
     *   **Bird Material:** Switch the `Type` to `Metallic` and increase the `Shininess` for a completely different look.
     *   **Randomize!** Don't be afraid to use the "Randomize" buttons in each section to discover unexpected and beautiful combinations. If you find one you like, give it a name in the "Presets" panel and save it!
 
+## Credits
+
+This project was inspired by the original [three.js birds examples](https://threejs.org/examples/?q=bird#webgpu_compute_birds) and further procedural audio/visual extensions were implemented by [sonicviz.com](https://sonicviz.com/us/).
